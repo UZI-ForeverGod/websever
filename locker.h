@@ -1,22 +1,17 @@
 #ifndef LOCKER_H
 #define LOCKER_H
 
-#include <exception>
 #include <pthread.h>
 #include <semaphore.h>
 
-// 线程同步机制封装类
 
-// 互斥锁类
+//互斥锁类
 class locker
 {
 public:
     locker()
     {
-        if(pthread_mutex_init(&m_mutex, NULL) != 0)
-        {
-            throw std::exception();
-        }
+        pthread_mutex_init(&m_mutex, nullptr);
     }
 
     ~locker()
@@ -26,57 +21,51 @@ public:
 
     bool lock()
     {
-        return pthread_mutex_lock(&m_mutex) == 0;
+        return pthread_mutex_lock(&m_mutex);
     }
 
-    bool unlock() 
+    bool unlock()
     {
-        return pthread_mutex_unlock(&m_mutex) == 0;
+        return pthread_mutex_unlock(&m_mutex);
     }
-
-    pthread_mutex_t *get()
-    {
-        return &m_mutex;
-    }
-
 private:
     pthread_mutex_t m_mutex;
-};
 
+};
 // 信号量类
-class sem 
+class sem
 {
 public:
-    sem() 
+    sem()
     {
-        if( sem_init( &m_sem, 0, 0 ) != 0 ) 
-        {
-            throw std::exception();
-        }
+        //初始化信号量为0, 不与其他进程共享
+        sem_init(&m_sem, 0, 0);
+
     }
-    sem(int num) 
+
+    sem(int num)
     {
-        if( sem_init( &m_sem, 0, num ) != 0 )
-        {
-            throw std::exception();
-        }
+        sem_init(&m_sem, 0, num);
     }
-    ~sem() 
+
+    ~sem()
     {
-        sem_destroy( &m_sem );
+        sem_destroy(&m_sem);
     }
-    // 等待信号量
-    bool wait() 
+
+    bool wait()
     {
-        return sem_wait( &m_sem ) == 0;
+        return sem_wait(&m_sem);
     }
-    // 增加信号量
-    bool post() 
+
+    bool post()
     {
-        return sem_post( &m_sem ) == 0;
+        return sem_post(&m_sem);
     }
+
 private:
     sem_t m_sem;
 };
+
 
 #endif
