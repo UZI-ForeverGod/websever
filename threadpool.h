@@ -25,13 +25,13 @@ private:
     //线程执行任务所用函数
     void run();
 private:
-    int m_thread_number;//线程池中线程数量
-    pthread_t* m_threads;//存放线程池中线程ID的数组
-    int m_max_requests;//请求队列中最多允许等待的任务数量
-    std::list<T*> m_workqueue;//任务队列
-    locker m_queuelocker;//保护任务队列的互斥锁
-    sem m_requests_number;//信号量，值等于任务队列中的任务数量
-    bool m_stop;//线程停止运行标志
+    int m_thread_number;                //线程池中线程数量
+    pthread_t* m_threads;               //存放线程池中线程ID的数组
+    int m_max_requests;                 //请求队列中最多允许等待的任务数量
+    std::list<T*> m_workqueue;          //任务队列
+    locker m_queuelocker;               //保护任务队列的互斥锁
+    sem m_requests_number;              //信号量，值等于任务队列中的任务数量
+    bool m_stop;                        //线程停止运行标志
 };
 
 template<typename T>
@@ -96,9 +96,11 @@ void threadpool<T>::run()
         m_requests_number.wait();
         //临界区, 上锁
         m_queuelocker.lock();
+
         //取任务
         T* request = m_workqueue.front();
         m_workqueue.pop_front();
+
         //解锁
         m_queuelocker.unlock();
 

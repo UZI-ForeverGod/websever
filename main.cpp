@@ -4,7 +4,7 @@
 
 
 
-#define MAX_FD 30000                //最大文件描述符个数
+#define MAX_FD 65535                //最大文件描述符个数
 #define MAX_EVENT_NUMBER 10000      //监听的最大事件数量
 #define TIMESLOT 5                  //超时时间系数
 //初始化任务类中共享的定时器链表
@@ -136,12 +136,13 @@ int main(int argc, char* argv[])
                 {
                     
                     close(connfd);
-                    continue;
+                    continue; 
                 }
                 printf("accept\n");
                 
                 //初始化任务数组并且将连接任务放置到epoll监听中
                 users[connfd].init(connfd, client_address);
+
                 
                 //初始化定时器, 记录超时时间,并加入链表中
                 timer_node<http_conn>* timer = new timer_node<http_conn>;
@@ -150,6 +151,7 @@ int main(int argc, char* argv[])
                 users[connfd].timer = timer;
                 http_conn::timerList.add_timer(timer);
                 printf("insert\n");
+                
                 
             }
             else
@@ -187,6 +189,7 @@ int main(int argc, char* argv[])
                                 
                                 http_conn::timerList.update_timer(users[sockfd].timer);
                             }
+                            
                             pool_point->append(users + sockfd);
 
                         }
@@ -224,6 +227,8 @@ int main(int argc, char* argv[])
 
     close(epollfd);
     close(listenfd);
+    delete [] users;
+    delete pool_point;
     return 0;
 
 

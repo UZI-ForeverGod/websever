@@ -84,6 +84,7 @@ void http_conn::init(int sockfd, const sockaddr_in& addr)
     m_address = addr;
 
     //将socket加入epoll监听中, 打开epolloneshot
+
     addfd(m_epollfd, m_sockfd, true);
     ++m_user_count;
 
@@ -110,7 +111,7 @@ void http_conn::init()
     bzero(m_read_buf, READ_BUFFER_SIZE);        // 初始化读缓冲区
 
     m_write_bytes = 0;                          // 写缓冲区中待读取的字节数
-    bzero(m_write_buf, READ_BUFFER_SIZE);       // 初始化写缓冲区
+    bzero(m_write_buf, WRITE_BUFFER_SIZE);       // 初始化写缓冲区
 
 }
 
@@ -450,6 +451,7 @@ http_conn::HTTP_CODE http_conn::process_read()
                 line_status = LINE_OPEN;
                 break;
             }
+
         }
     }
 
@@ -553,6 +555,7 @@ bool http_conn::write()
             }
             else
             {
+                
                 //发生其他错误, 返回false并释放映射的内存
                 unmap();
                 return false;
@@ -735,6 +738,7 @@ void http_conn::process()
     if(read_ret == NO_REQUEST)
     {
         modfd(m_epollfd, m_sockfd, EPOLLIN);
+        return;
     }
 
     //准备好响应数据
