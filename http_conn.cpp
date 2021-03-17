@@ -83,8 +83,10 @@ void http_conn::init(int sockfd, const sockaddr_in& addr)
     m_sockfd = sockfd;
     m_address = addr;
 
-    //将socket加入epoll监听中, 打开epolloneshot
 
+    //将socket加入epoll监听中, 打开epolloneshot
+    int reuse = 1;
+    setsockopt( m_sockfd, SOL_SOCKET, SO_REUSEADDR, &reuse, sizeof( reuse ) );
     addfd(m_epollfd, m_sockfd, true);
     ++m_user_count;
 

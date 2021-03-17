@@ -127,7 +127,7 @@ int main(int argc, char* argv[])
                 //失败
                 if(connfd < 0)
                 {
-                    perror("accept error:");
+                    perror("accept error");
                     continue;
                 }
 

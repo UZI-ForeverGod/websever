@@ -13,6 +13,7 @@
 #include <stdarg.h>
 #include <cstdio>
 #include "lst_timer.h"
+#include <unistd.h>
 
 //任务类
 class http_conn
@@ -61,6 +62,20 @@ public:
     void process();                                                         //处理客户端请求
     bool read();                                                            //非阻塞读
     bool write();                                                           // 非阻塞写
+    void shut()
+    {
+        if(m_sockfd != -1)
+        {
+            printf("time out\n");
+            //从epoll中移除监听事件
+            epoll_ctl(m_epollfd, EPOLL_CTL_DEL, m_sockfd, 0);
+            //标记已经删除过
+            //关闭socket
+            --m_user_count;
+            shutdown(m_sockfd, SHUT_RDWR);
+            m_sockfd = -1;
+        }
+    }
 private:
     void init();                                                            //初始化类自身的数据
 

@@ -244,7 +244,7 @@ void sort_timer_list<T>::tick()
             //链表中至少有一个超时
 
             //关闭连接
-            temp->task->close_conn();
+            temp->task->shut();
 
             //更新头节点位置
             head = temp->next;
