@@ -143,6 +143,7 @@ int main(int argc, char* argv[])
                 //初始化任务数组并且将连接任务放置到epoll监听中
                 users[connfd].init(connfd, client_address);
 
+
                 
                 //初始化定时器, 记录超时时间,并加入链表中
                 timer_node<http_conn>* timer = new timer_node<http_conn>;
@@ -184,7 +185,7 @@ int main(int argc, char* argv[])
                             {
                                 time_t cur = time(NULL);
 
-                                users[sockfd].timer->expire = cur + 3 * TIMESLOT;
+                               users[sockfd].timer->expire = cur + 3 * TIMESLOT;
                                 
                                 
                                 http_conn::timerList.update_timer(users[sockfd].timer);
@@ -211,6 +212,7 @@ int main(int argc, char* argv[])
                             //如果失败则关闭连接
                             if(!users[sockfd].write())
                             {
+                                printf("write error\n");
                                 //删除定时器
                                 http_conn::timerList.del_timer(users[sockfd].timer);
                                 users[sockfd].close_conn();

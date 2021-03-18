@@ -33,6 +33,8 @@ void addfd(int epollfd, int fd, bool one_shot)
     epoll_event event;
     event.data.fd = fd;
     event.events = EPOLLIN | EPOLLRDHUP;
+    //设置端口复用
+    setnonblocking(fd); 
     if(one_shot)
     {
         event.events |= EPOLLONESHOT;
@@ -68,10 +70,10 @@ void http_conn::close_conn()
         printf("close\n");
         //从epoll中移除监听事件
         removefd(m_epollfd, m_sockfd);
-        //标记已经删除过
-        m_sockfd = -1;
         //关闭socket
         close(m_sockfd);
+        //标记已经删除过
+        m_sockfd = -1;
         --m_user_count;
     }
 
@@ -217,6 +219,7 @@ http_conn::LINE_STATUS http_conn::parse_line()
 }
 
 
+
 //解析HTTP请求行
 http_conn::HTTP_CODE http_conn::parse_request_line(char* text)
 {
@@ -289,6 +292,7 @@ http_conn::HTTP_CODE http_conn::parse_request_line(char* text)
 
 
 }
+
 
 //解析请求头部
 /*
@@ -524,6 +528,7 @@ void http_conn::unmap()
     }
 }
 
+
 //写HTTP响应
 bool http_conn::write()
 {
@@ -748,11 +753,11 @@ void http_conn::process()
     if(!write_ret)
     {
         close_conn();
-
-        //关闭连接后直接退出
+        
         return;
-    }
 
+    }
+    
     //如果process_write成功, 注册监听可写事件以及重新注册EPOLLONESHOT
     modfd(m_epollfd, m_sockfd, EPOLLOUT);
 
