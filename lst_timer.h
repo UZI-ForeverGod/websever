@@ -84,7 +84,15 @@ void sort_timer_list<T>::add_timer(timer_node<T>* timer)
         printf("本来为空\n");
         return;
     }
+    
+    //链表本来不为空
+    //直接插入链表尾
+    tail->next = timer;
+    timer->next = nullptr;
+    timer->prev = tail;
+    tail = timer;
 
+    /*
     //如果头节点超时时间已经大于或者等于timer, 那么将timer插入成为头节点
     //否则寻找第一个超时时间大于timer的节点, 将timer插在这个节点前边
     if(head->expire >= timer->expire)
@@ -121,6 +129,7 @@ void sort_timer_list<T>::add_timer(timer_node<T>* timer)
         
         
     }
+    */
 }
 
 template<typename T>
@@ -246,13 +255,16 @@ void sort_timer_list<T>::tick()
             //关闭连接
             temp->task->shut();
 
+            /*
             //更新头节点位置
             head = temp->next;
             if(head)
             {
                 head->prev = nullptr;
-            } 
-            delete temp;
+            }
+            */
+            //删除节点 
+            del_timer(temp);
 
             //往前继续判断有无超时
             temp = head;

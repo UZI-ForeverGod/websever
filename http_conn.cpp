@@ -88,7 +88,7 @@ void http_conn::init(int sockfd, const sockaddr_in& addr)
 
     //将socket加入epoll监听中, 打开epolloneshot
     int reuse = 1;
-    setsockopt( m_sockfd, SOL_SOCKET, SO_REUSEADDR, &reuse, sizeof( reuse ) );
+    setsockopt(m_sockfd, SOL_SOCKET, SO_REUSEADDR, &reuse, sizeof(reuse));
     addfd(m_epollfd, m_sockfd, true);
     ++m_user_count;
 
@@ -470,6 +470,7 @@ http_conn::HTTP_CODE http_conn::process_read()
 //响应HTTP请求, 如果请求网页文件存在则返回, 否则报错
 http_conn::HTTP_CODE http_conn::do_request()
 {
+
     //获取请求的文件路径
     strcpy(m_real_file, source_root);
     int len = strlen(source_root);

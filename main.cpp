@@ -6,7 +6,7 @@
 
 #define MAX_FD 65535                //最大文件描述符个数
 #define MAX_EVENT_NUMBER 10000      //监听的最大事件数量
-#define TIMESLOT 5                  //超时时间系数
+#define TIMESLOT 50                  //超时时间系数
 //初始化任务类中共享的定时器链表
 sort_timer_list<http_conn> http_conn::timerList;
 
@@ -41,7 +41,7 @@ int main(int argc, char* argv[])
 {
     if(argc <= 1)
     {
-        printf("usage: %s port_number\n", basename(argv[0]));
+        printf("usage: %s port_number\n", argv[0]);
         return 1;
     }
 
@@ -53,13 +53,22 @@ int main(int argc, char* argv[])
     addsig(SIGALRM, timer_handler);
 
 
+
+    threadpool<http_conn> pool;
+    threadpool<http_conn>* pool_point = &pool;
+    
+    /*
     //创建线程池
     threadpool<http_conn>* pool_point = new threadpool<http_conn>;
+    */
+
+
+
 
 
     //任务数组
     http_conn* users = new http_conn[MAX_FD];
-
+    
 
 
     //创建监听socket， tcp
@@ -185,8 +194,7 @@ int main(int argc, char* argv[])
                             {
                                 time_t cur = time(NULL);
 
-                               users[sockfd].timer->expire = cur + 3 * TIMESLOT;
-                                
+                                users[sockfd].timer->expire = cur + 3 * TIMESLOT;
                                 
                                 http_conn::timerList.update_timer(users[sockfd].timer);
                             }

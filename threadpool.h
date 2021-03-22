@@ -39,7 +39,9 @@ threadpool<T>::threadpool(int thread_number, int max_requests):
         m_thread_number(thread_number), m_max_requests(max_requests), m_threads(nullptr), m_stop(false)
 {
     //创建线程ID数组以及线程
+
     m_threads = new pthread_t[m_thread_number];
+    
     for(int i = 0; i < thread_number; ++i)
     {
         printf("create %d pthread\n", i + 1);
@@ -52,6 +54,7 @@ threadpool<T>::threadpool(int thread_number, int max_requests):
 template<typename T>
 threadpool<T>::~threadpool()
 {
+
     delete [] m_threads;
     //线程停止运行
     m_stop = true;
